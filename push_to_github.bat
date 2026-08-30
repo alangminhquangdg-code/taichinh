@@ -1,26 +1,32 @@
 @echo off
-chcp 65001 > nul
+cd /d "%~dp0"
+set "PATH=C:\Program Files\Git\cmd;%PATH%"
+
 echo ========================================================
-echo   ĐANG ĐẨY MÃ NGUỒN LÊN GITHUB (FAMILY FINANCE HUB)
+echo   DANG DAY MA NGUON LEN GITHUB (FAMILY FINANCE HUB)
 echo ========================================================
 echo.
 
-"C:\Program Files\Git\cmd\git.exe" add .
-"C:\Program Files\Git\cmd\git.exe" commit -m "update: Dong bo ma nguon ung dung tai chinh" --allow-empty
+echo [1/3] Adding files...
+git add .
+
+echo [2/3] Committing changes...
+git commit -m "update: Sync code to GitHub" --allow-empty
+
+echo [3/3] Pushing to GitHub...
 echo.
-echo Đang kết nối và đẩy lên GitHub...
-"C:\Program Files\Git\cmd\git.exe" push -u origin main
+git push -u origin main
 
 echo.
-if %errorlevel% equ 0 (
+if %ERRORLEVEL% equ 0 (
     echo ========================================================
-    echo   [THÀNH CÔNG] Đã đẩy toàn bộ mã nguồn lên GitHub!
-    echo   Xem tại: https://github.com/alangminhquangdg-code/taichinh
+    echo   [SUCCESS] Da day toan bo ma nguon len GitHub thanh cong!
+    echo   Xem tai: https://github.com/alangminhquangdg-code/taichinh
     echo ========================================================
 ) else (
     echo ========================================================
-    echo   [LƯU Ý] Nếu đây là lần đầu tiên, vui lòng đăng nhập
-    echo   cửa sổ GitHub vừa hiện lên trên màn hình.
+    echo   [ERROR] Co loi xay ra khi day len GitHub.
+    echo   Vui long dang nhap tren trinh duyet neu duoc yeu cau.
     echo ========================================================
 )
 echo.
