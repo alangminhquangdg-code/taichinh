@@ -17,6 +17,7 @@ import { renderFamily } from './modules/family.js';
 import { renderReports } from './modules/reports.js';
 import { renderAiAdvisor } from './modules/aiAdvisor.js';
 import { renderSettings } from './modules/settings.js';
+import './firebase.js';
 
 let currentTab = 'dashboard';
 
