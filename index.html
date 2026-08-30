@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Tài Chính Cá Nhân & Gia Đình | Family Finance Hub</title>
+  <meta name="description" content="Ứng dụng quản lý tài chính cá nhân và gia đình toàn diện, thông minh, bảo mật và hiện đại.">
+
+  <!-- Google Fonts & CDN Libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Chart.js, Confetti, SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- App Main Container -->
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="appSidebar">
+      <!-- Sidebar Brand Header -->
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">FinanceHub</span>
+          <span class="brand-tagline">Tài Chính Gia Đình</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Tổng quan & Quản trị</div>
+        <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Tổng Quan</span>
+        </a>
+        <a href="#accounts" class="nav-item" data-tab="accounts">
+          <i class="fa-solid fa-wallet"></i>
+          <span>Tài Khoản & Ví</span>
+        </a>
+        <a href="#transactions" class="nav-item" data-tab="transactions">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Sổ Giao Dịch</span>
+        </a>
+
+        <div class="nav-section-title">Kế hoạch & Mục tiêu</div>
+        <a href="#budgets" class="nav-item" data-tab="budgets">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Ngân Sách 50/30/20</span>
+        </a>
+        <a href="#savings" class="nav-item" data-tab="savings">
+          <i class="fa-solid fa-piggy-bank"></i>
+          <span>Mục Tiêu Tiết Kiệm</span>
+        </a>
+        <a href="#debts" class="nav-item" data-tab="debts">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          <span>Sổ Nợ & Cho Vay</span>
+        </a>
+        <a href="#investments" class="nav-item" data-tab="investments">
+          <i class="fa-solid fa-vault"></i>
+          <span>Đầu Tư & Tiết Kiệm</span>
+        </a>
+
+        <div class="nav-section-title">Gia đình & Phân tích</div>
+        <a href="#family" class="nav-item" data-tab="family">
+          <i class="fa-solid fa-people-roof"></i>
+          <span>Gia Đình & Quỹ Chung</span>
+        </a>
+        <a href="#reports" class="nav-item" data-tab="reports">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Báo Cáo & Sức Khỏe</span>
+        </a>
+        <a href="#ai-advisor" class="nav-item" data-tab="ai-advisor">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Trợ Lý AI Tài Chính</span>
+          <span class="nav-badge" style="background: var(--primary-light); color: var(--primary);">AI</span>
+        </a>
+        <a href="#settings" class="nav-item" data-tab="settings">
+          <i class="fa-solid fa-gear"></i>
+          <span>Cài Đặt Dữ Liệu</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer / Family Mini Profile -->
+      <div class="sidebar-footer">
+        <div class="family-quick-widget">
+          <div class="family-avatar-group" id="sidebarFamilyAvatars">
+            <!-- Rendered by JS -->
+          </div>
+          <div class="family-quick-info">
+            <div class="family-quick-name">Gia Đình Hạnh Phúc</div>
+            <div class="family-quick-status">Tài chính an toàn</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+
+      <!-- Sticky Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="menu-toggle-btn" id="btnMobileMenuToggle" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="header-title-block">
+            <h1 class="page-title" id="headerPageTitle">Tổng Quan Tài Chính</h1>
+            <span class="page-subtitle" id="headerPageSubtitle">Thống kê tài sản ròng, dòng tiền và phân bổ chi tiêu</span>
+          </div>
+        </div>
+
+        <!-- Header Actions Controls -->
+        <div class="header-actions">
+          <!-- Member Switcher Dropdown -->
+          <div class="member-select-wrapper">
+            <select class="member-filter-btn" id="memberFilterSelect">
+              <option value="all">👨‍👩‍👧‍👦 Cả Gia Đình</option>
+            </select>
+          </div>
+
+          <!-- Quick Theme Toggle -->
+          <button class="btn-icon-header" id="btnThemeToggle" title="Chuyển đổi giao diện Sáng / Tối">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          </button>
+
+          <!-- Quick Add Button CTA -->
+          <button class="btn-quick-add" id="btnGlobalQuickAdd">
+            <i class="fa-solid fa-plus"></i>
+            <span>Thêm Giao Dịch</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Content Body (Tab Views) -->
+      <main class="content-body">
+        <section id="dashboardView" class="tab-view active"></section>
+        <section id="accountsView" class="tab-view"></section>
+        <section id="transactionsView" class="tab-view"></section>
+        <section id="budgetsView" class="tab-view"></section>
+        <section id="savingsView" class="tab-view"></section>
+        <section id="debtsView" class="tab-view"></section>
+        <section id="investmentsView" class="tab-view"></section>
+        <section id="familyView" class="tab-view"></section>
+        <section id="reportsView" class="tab-view"></section>
+        <section id="aiAdvisorView" class="tab-view"></section>
+        <section id="settingsView" class="tab-view"></section>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Root Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- =========================================================================
+       MODALS (INTERACTIVE DIALOGS)
+       ========================================================================= -->
+
+  <!-- Modal: Thêm / Sửa Giao Dịch -->
+  <div class="modal-overlay" id="modalTransaction">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-receipt" style="color: var(--primary);"></i>
+          <span>Ghi Nhận Giao Dịch Mới</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formTransaction">
+        <div class="modal-body">
+          <!-- Type Segmented Switcher -->
+          <div class="tab-segmented mb-4">
+            <button type="button" class="tab-seg-btn tx-type-seg active expense" data-type="expense">
+              <i class="fa-solid fa-arrow-up"></i> Chi Tiêu
+            </button>
+            <button type="button" class="tab-seg-btn tx-type-seg" data-type="income">
+              <i class="fa-solid fa-arrow-down"></i> Thu Nhập
+            </button>
+            <button type="button" class="tab-seg-btn tx-type-seg" data-type="transfer">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i> Chuyển Tiền
+            </button>
+          </div>
+
+          <!-- Amount Input & Fast Chips -->
+          <div class="form-group mb-3">
+            <label class="form-label">Số tiền giao dịch (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="txModalAmount" placeholder="0" required style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">
+            <div class="flex flex-wrap gap-2 mt-2">
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="50000">+50k</button>
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="100000">+100k</button>
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="200000">+200k</button>
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="500000">+500k</button>
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="1000000">+1tr</button>
+              <button type="button" class="btn btn-outline btn-sm amount-chip-btn" data-amount="5000000">+5tr</button>
+            </div>
+          </div>
+
+          <!-- Category (Hidden if transfer) -->
+          <div class="form-group mb-3" id="txCategoryGroup">
+            <label class="form-label">Danh mục phân loại <span class="req">*</span></label>
+            <select class="form-control" id="txModalCategory"></select>
+          </div>
+
+          <!-- Account Source -->
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Tài khoản / Ví nguồn <span class="req">*</span></label>
+              <select class="form-control" id="txModalAccount" required></select>
+            </div>
+
+            <!-- Target Account (Only for transfer) -->
+            <div class="form-group" id="txTargetAccountGroup" style="display: none; margin-bottom: 0;">
+              <label class="form-label">Tài khoản thụ hưởng <span class="req">*</span></label>
+              <select class="form-control" id="txModalTargetAccount"></select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Thành viên thực hiện</label>
+              <select class="form-control" id="txModalMember"></select>
+            </div>
+          </div>
+
+          <!-- Date & Note -->
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Ngày giao dịch</label>
+              <input type="date" class="form-control" id="txModalDate" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Thẻ / Gắn nhãn (tags)</label>
+              <input type="text" class="form-control" id="txModalTags" placeholder="vd: Siêu thị, Tiền điện">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ghi chú chi tiết</label>
+            <input type="text" class="form-control" id="txModalNote" placeholder="Chi tiết nội dung giao dịch...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Lưu Giao Dịch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thêm / Sửa Tài Khoản Ví -->
+  <div class="modal-overlay" id="modalAccount">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-wallet" style="color: var(--primary);"></i>
+          <span id="accModalTitle">Thêm Tài Khoản / Ví Mới</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formAccount">
+        <input type="hidden" id="accModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Tên tài khoản / Ví <span class="req">*</span></label>
+            <input type="text" class="form-control" id="accName" placeholder="vd: Vietcombank Quỹ chung, Ví MoMo..." required>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Loại tài khoản</label>
+              <select class="form-control" id="accType">
+                <option value="bank">Tài khoản Ngân hàng</option>
+                <option value="cash">Tiền mặt</option>
+                <option value="credit">Thẻ tín dụng (Credit Card)</option>
+                <option value="ewallet">Ví điện tử</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Chủ sở hữu</label>
+              <select class="form-control" id="accOwner"></select>
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Số dư hiện tại (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="accBalance" placeholder="0" required>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Số tài khoản / Số thẻ (Tùy chọn)</label>
+            <input type="text" class="form-control" id="accNumber" placeholder="vd: 10188996688">
+          </div>
+
+          <div class="form-group mb-3" id="creditFieldsGroup" style="display: none;">
+            <label class="form-label">Hạn mức thẻ tín dụng (VNĐ)</label>
+            <input type="number" class="form-control" id="accCreditLimit" placeholder="vd: 100000000">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Tài Khoản</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Chuyển Tiền Nội Bộ -->
+  <div class="modal-overlay" id="modalTransfer">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-arrow-right-arrow-left" style="color: var(--primary);"></i>
+          <span>Chuyển Tiền Nội Bộ Giữa Các Ví</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formTransfer">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Từ tài khoản nguồn <span class="req">*</span></label>
+            <select class="form-control" id="transferFromAcc" required></select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Đến tài khoản đích <span class="req">*</span></label>
+            <select class="form-control" id="transferToAcc" required></select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Số tiền chuyển (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="transferAmount" placeholder="0" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ghi chú chuyển tiền</label>
+            <input type="text" class="form-control" id="transferNote" placeholder="vd: Đóng góp quỹ chung gia đình tháng 8">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Thực Hiện Chuyển Tiền</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thiết Lập Ngân Sách -->
+  <div class="modal-overlay" id="modalBudget">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-layer-group" style="color: var(--primary);"></i>
+          <span>Thiết Lập Ngân Sách Hàng Tháng</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formBudget">
+        <input type="hidden" id="budgetModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Danh mục chi tiêu <span class="req">*</span></label>
+            <select class="form-control" id="budgetModalCategory" required></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Hạn mức chi tiêu tối đa / tháng (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="budgetModalAmount" placeholder="0" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Ngân Sách</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Mục Tiêu Tiết Kiệm -->
+  <div class="modal-overlay" id="modalGoal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-piggy-bank" style="color: var(--emerald);"></i>
+          <span id="goalModalTitle">Tạo Mục Tiêu Tiết Kiệm Mới</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formGoal">
+        <input type="hidden" id="goalModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Tên mục tiêu / Ước mơ <span class="req">*</span></label>
+            <input type="text" class="form-control" id="goalName" placeholder="vd: Mua nhà, Đổi xe VinFast, Du lịch..." required>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Số tiền mục tiêu (VNĐ) <span class="req">*</span></label>
+              <input type="number" class="form-control" id="goalTarget" placeholder="0" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Đã có sẵn (VNĐ)</label>
+              <input type="number" class="form-control" id="goalCurrent" placeholder="0">
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Thời hạn hoàn thành (Hạn chót)</label>
+            <input type="date" class="form-control" id="goalDate" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ghi chú & Kế hoạch</label>
+            <input type="text" class="form-control" id="goalNote" placeholder="Mục tiêu tài chính quan trọng...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-emerald">Lưu Mục Tiêu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Nạp Tiền Vào Mục Tiêu -->
+  <div class="modal-overlay" id="modalDepositGoal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-plus-circle" style="color: var(--emerald);"></i>
+          <span>Nạp Tiền Tích Lũy Vào Mục Tiêu</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formDepositGoal">
+        <input type="hidden" id="depositGoalId">
+        <div class="modal-body">
+          <div class="mb-3" style="padding: 12px; background: var(--bg-glass-card); border-radius: var(--radius-md);">
+            <div style="font-size: 0.78rem; color: var(--text-muted);">MỤC TIÊU TÍCH LŨY:</div>
+            <strong id="depositGoalNameLabel" style="font-size: 1.05rem; color: var(--emerald);"></strong>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Trích tiền từ tài khoản / ví <span class="req">*</span></label>
+            <select class="form-control" id="depositFromAcc" required></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Số tiền nạp (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="depositAmount" placeholder="0" required style="font-size: 1.2rem; font-weight: 700; color: var(--emerald);">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-emerald">Xác Nhận Nạp Tiền</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thêm Khoản Nợ / Cho Vay -->
+  <div class="modal-overlay" id="modalDebt">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-hand-holding-dollar" style="color: var(--rose);"></i>
+          <span id="debtModalTitle">Thêm Khoản Nợ / Cho Vay</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formDebt">
+        <input type="hidden" id="debtModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Loại sổ nợ <span class="req">*</span></label>
+            <select class="form-control" id="debtType">
+              <option value="borrowed">🔴 Tôi đang nợ (Vay ngân hàng, mua trả góp, mượn tiền)</option>
+              <option value="lent">🟢 Người khác nợ tôi (Cho bạn bè, người thân mượn)</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Đối tượng (Tên người vay / Ngân hàng) <span class="req">*</span></label>
+            <input type="text" class="form-control" id="debtPersonName" placeholder="vd: Ngân hàng VCB - Vay căn hộ, Anh Tuấn..." required>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Số tiền gốc ban đầu <span class="req">*</span></label>
+              <input type="number" class="form-control" id="debtOriginal" placeholder="0" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Đã thanh toán trước đó</label>
+              <input type="number" class="form-control" id="debtPaid" placeholder="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Lãi suất (%/năm)</label>
+              <input type="number" step="0.1" class="form-control" id="debtRate" placeholder="0">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Hạn thanh toán</label>
+              <input type="date" class="form-control" id="debtDueDate">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ghi chú khoản vay</label>
+            <input type="text" class="form-control" id="debtNote" placeholder="Chi tiết kỳ hạn và thỏa thuận...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Khoản Nợ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thanh Toán Nợ Từng Đợt -->
+  <div class="modal-overlay" id="modalPayDebt">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-money-bill-wave" style="color: var(--primary);"></i>
+          <span>Ghi Nhận Thanh Toán Nợ</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formPayDebt">
+        <input type="hidden" id="payDebtId">
+        <div class="modal-body">
+          <div class="mb-3" style="padding: 12px; background: var(--bg-glass-card); border-radius: var(--radius-md);">
+            <div style="font-size: 0.78rem; color: var(--text-muted);">KHOẢN NỢ:</div>
+            <strong id="payDebtNameLabel" style="font-size: 1rem;"></strong>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+              Dư nợ còn lại: <strong id="payDebtRemainingLabel" style="color: var(--rose);"></strong>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Số tiền thanh toán đợt này (VNĐ) <span class="req">*</span></label>
+            <input type="number" class="form-control" id="payDebtAmount" placeholder="0" required style="font-weight: 700; font-size: 1.1rem; color: var(--primary);">
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Thanh toán qua tài khoản / ví <span class="req">*</span></label>
+            <select class="form-control" id="payDebtFromAcc" required></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Ghi chú thanh toán</label>
+            <input type="text" class="form-control" id="payDebtNote" placeholder="vd: Thanh toán gốc + lãi kỳ tháng 8">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Xác Nhận Thanh Toán</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thêm Tài Sản Đầu Tư -->
+  <div class="modal-overlay" id="modalInvest">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-chart-line" style="color: var(--primary);"></i>
+          <span>Thêm Tài Sản Đầu Tư & Tiết Kiệm</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formInvest">
+        <input type="hidden" id="investModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Loại hình tài sản <span class="req">*</span></label>
+            <select class="form-control" id="investType">
+              <option value="term_deposit">Sổ tiết kiệm ngân hàng có kỳ hạn</option>
+              <option value="stock">Cổ phiếu (Chứng khoán)</option>
+              <option value="gold">Vàng miếng / Vàng nhẫn</option>
+              <option value="crypto">Tiền mã hóa (Crypto)</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Tên tài sản / Tên sổ <span class="req">*</span></label>
+            <input type="text" class="form-control" id="investName" placeholder="vd: Sổ tiết kiệm VCB 12T, Cổ phiếu FPT..." required>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Mã chứng khoán / Mã sổ</label>
+            <input type="text" class="form-control" id="investCode" placeholder="vd: FPT, SJC, STK-01">
+          </div>
+
+          <!-- Term Deposit Fields -->
+          <div id="investTermFields">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Số tiền gửi gốc (VNĐ)</label>
+                <input type="number" class="form-control" id="investPrincipal" placeholder="0">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Lãi suất (%/năm)</label>
+                <input type="number" step="0.1" class="form-control" id="investRate" placeholder="5.4">
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Kỳ hạn (Tháng)</label>
+                <input type="number" class="form-control" id="investMonths" value="12">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Ngày mở</label>
+                <input type="date" class="form-control" id="investOpenDate">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Ngày đáo hạn</label>
+                <input type="date" class="form-control" id="investMaturityDate">
+              </div>
+            </div>
+          </div>
+
+          <!-- Market Asset Fields -->
+          <div id="investMarketFields" style="display: none;">
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Số lượng</label>
+                <input type="number" step="0.01" class="form-control" id="investQuantity" placeholder="100">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Giá mua TB</label>
+                <input type="number" class="form-control" id="investBuyPrice" placeholder="0">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Giá thị trường</label>
+                <input type="number" class="form-control" id="investCurrentPrice" placeholder="0">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Danh Mục</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Thêm / Sửa Thành Viên Gia Đình -->
+  <div class="modal-overlay" id="modalMember">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i>
+          <span id="memberModalTitle">Thêm Thành Viên Mới</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="formMember">
+        <input type="hidden" id="memberModalId">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Họ và tên đầy đủ <span class="req">*</span></label>
+            <input type="text" class="form-control" id="memberName" placeholder="vd: Nguyễn Minh Quân" required>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Tên gọi thân mật</label>
+              <input type="text" class="form-control" id="memberShortName" placeholder="vd: Bố Quân">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Vai trò trong gia đình</label>
+              <input type="text" class="form-control" id="memberRole" placeholder="vd: Chủ hộ, Con trai...">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Hạn mức chi tiêu tháng (VNĐ)</label>
+            <input type="number" class="form-control" id="memberQuota" placeholder="15000000">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Hồ Sơ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Bootstrap Module -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
